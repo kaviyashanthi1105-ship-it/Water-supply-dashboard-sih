@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Water Supply Dashboard - SIH</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
+        body { background: #f0f4f8; padding: 20px; margin: 0; }
+        .container { max-width: 1200px; margin: auto; }
+        
+        /* Header */
+        h1 { color: #0d47a1; border-bottom: 3px solid #0d47a1; padding-bottom: 10px; }
+        
+        /* Cards */
+        .card-row { display: flex; gap: 20px; margin: 20px 0; flex-wrap: wrap; }
+        .box { 
+            background: white; padding: 20px; border-radius: 12px; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1); flex: 1; min-width: 150px;
+            text-align: center; border-left: 5px solid #0d47a1;
+        }
+        .box h3 { margin: 0; color: #555; font-size: 14px; }
+        .box p { margin: 10px 0 0; font-size: 28px; font-weight: bold; color: #0d47a1; }
+        .box small { display: block; color: #888; font-size: 12px; }
+
+        /* Chart */
+        .chart-container { background: white; padding: 20px; border-radius: 12px; margin: 20px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        canvas { max-height: 250px; width: 100% !important; }
+
+        /* Task 3: Filters & Table */
+        .filter-section { 
+            background: white; padding: 20px; border-radius: 12px; margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: flex; gap: 15px; flex-wrap: wrap; align-items: end;
+        }
+        .filter-group { display: flex; flex-direction: column; gap: 5px; }
+        .filter-group label { font-size: 12px; font-weight: bold; color: #555; }
+        .filter-group select, .filter-group input { 
+            padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px; 
+            font-size: 14px; min-width: 150px;
+        }
+        .filter-group button { 
+            background: #0d47a1; color: white; border: none; padding: 8px 20px; 
+            border-radius: 8px; cursor: pointer; font-weight: bold;
+        }
+        .filter-group button:hover { background: #1565c0; }
+        .total-count { margin-left: auto; font-weight: bold; color: #0d47a1; font-size: 18px; padding: 10px; }
+
+        .table-wrapper { 
+            background: white; border-radius: 12px; padding: 10px; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow-x: auto;
+            max-height: 400px; overflow-y: auto;
+        }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        th { background: #e3f2fd; color: #0d47a1; padding: 12px; text-align: left; position: sticky; top: 0; z-index: 2; }
+        td { padding: 10px 12px; border-bottom: 1px solid #eee; }
+        tr:hover { background: #f5f9ff; }
+        .badge { 
+            padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold;
+        }
+        .badge-open { background: #e8f5e9; color: #2e7d32; }
+        .badge-closed { background: #ffebee; color: #c62828; }
+        .faulty { background: #fff3e0; border-left: 4px solid #ff9800; }
+        .text-muted { color: #999; font-style: italic; }
+        .loading { text-align: center; padding: 30px; color: #888; }
+        .error-msg { background: #ffebee; color: #c62828; padding: 10px; border-radius: 8px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🚰 Ward Water Supply Dashboard</h1>
+
+    <!-- Live Cards -->
+    <div class="card-row">
+        <div class="box"><h3>Flow</h3><p id="flowVal">--</p><small>Litres/sec</small></div>
+        <div class="box"><h3>Pressure</h3><p id="pressureVal">--</p><small>bar</small></div>
+        <div class="box"><h3>Level</h3><p id="levelVal">--</p><small>%</small></div>
+        <div class="box"><h3>Latest Ward</h3><p id="wardVal">--</p><small>Supply Point</small></div>
+    </div>
+
+    <!-- Chart -->
+    <div class="chart-container">
+        <canvas id="myChart"></canvas>
+    </div>
+
+    <!-- Task 3: Search & Filter Section -->
+    <div class="filter-section">
+        <div class="filter-group">
+            <label>🔍 Search (Device ID / Ward)</label>
+            <input type="text" id="searchInput" placeholder="Type to search..." oninput="fetchTableData()">
+        </div>
+        <div class="filter-group">
+            <label>🏙️ Filter by Ward</label>
+            <select id="wardFilter" onchange="fetchTableData()">
+                <option value="">All Wards</option>
+                <option value="Ward-A">Ward-A</option>
+                <option value="Ward-B">Ward-B</option>
+                <option value="Ward-C">Ward-C</option>
+                <option value="Ward-D">Ward-D</option>
+                <option value="Ward-E">Ward-E</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>🚦 Valve State</label>
+            <select id="valveFilter" onchange="fetchTableData()">
+                <option value="">All States</option>
+                <option value="OPEN">OPEN</option>
+                <option value="CLOSED">CLOSED</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <button onclick="fetchTableData()">🔄 Refresh Table</button>
+        </div>
+        <div class="total-count" id="totalCount">📊 Total: 0</div>
+    </div>
+
+    <!-- Table (Task 3: Listing) -->
+    <div class="table-wrapper" id="tableWrapper">
+        <div id="tableContent">
+            <div class="loading">Loading readings...</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ========== 1. CHART SETUP (Live Data) ==========
+    const ctx = document.getElementById('myChart').getContext('2d');
+    let labels = [], dataPoints = [];
+    const chart = new Chart(ctx, {
+        type: 'line',
+        data: { labels: labels, datasets: [{ label: 'Flow Rate (L/s)', data: dataPoints, borderColor: '#0d47a1', tension: 0.2, fill: false }] },
+        options: { 
+            responsive: true, 
+            plugins: { legend: { display: true } },
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+
+    async function fetchLiveData() {
+        try {
+            const res = await fetch('http://localhost:5000/api/data');
+            const data = await res.json();
+            document.getElementById('flowVal').innerText = data.flow ?? '--';
+            document.getElementById('pressureVal').innerText = data.pressure ?? '--';
+            document.getElementById('levelVal').innerText = data.level ?? '--';
+            document.getElementById('wardVal').innerText = data.ward ?? '--';
+
+            if (data.flow !== undefined && data.flow !== null) {
+                labels.push(new Date().toLocaleTimeString());
+                dataPoints.push(data.flow);
+                if (labels.length > 20) { labels.shift(); dataPoints.shift(); }
+                chart.update();
+            }
+        } catch (e) { console.error('Live data error:', e); }
+    }
+    fetchLiveData();
+    setInterval(fetchLiveData, 3000);
+
+    // ========== 2. TABLE + SEARCH + FILTER (Task 3) ==========
+    async function fetchTableData() {
+        const ward = document.getElementById('wardFilter').value;
+        const valve = document.getElementById('valveFilter').value;
+        const search = document.getElementById('searchInput').value.toLowerCase();
+
+        let url = 'http://localhost:5000/api/readings?';
+        const params = [];
+        if (ward) params.push(`ward=${encodeURIComponent(ward)}`);
+        if (valve) params.push(`valve=${encodeURIComponent(valve)}`);
+        url += params.join('&');
+
+        try {
+            const res = await fetch(url);
+            if (!res.ok) throw new Error('Network error');
+            const data = await res.json();
+
+            // Frontend Search (filter by Device ID or Ward or Reading ID)
+            let filtered = data;
+            if (search) {
+                filtered = data.filter(row => 
+                    (row.device_id && row.device_id.toLowerCase().includes(search)) ||
+                    (row.ward && row.ward.toLowerCase().includes(search)) ||
+                    (row.reading_id && row.reading_id.toLowerCase().includes(search))
+                );
+            }
+
+            renderTable(filtered);
+            document.getElementById('totalCount').innerText = `📊 Total: ${filtered.length} / ${data.length}`;
+
+        } catch (e) {
+            document.getElementById('tableContent').innerHTML = `<div class="error-msg">❌ Failed to load table data. Make sure Backend is running.</div>`;
+            console.error(e);
+        }
+    }
+
+    function renderTable(rows) {
+        const container = document.getElementById('tableContent');
+        if (!rows || rows.length === 0) {
+            container.innerHTML = `<div class="loading">📭 No readings found. Wait for simulator to send data!</div>`;
+            return;
+        }
+
+        let html = `<table>
+            <thead><tr>
+                <th>#ID</th>
+                <th>Ward</th>
+                <th>Flow (L/s)</th>
+                <th>Valve</th>
+                <th>Device ID</th>
+                <th>Recorded At</th>
+            </tr></thead><tbody>`;
+
+        rows.forEach(row => {
+            const isFaulty = (row.flow_litres === null || row.flow_litres > 100 || row.flow_litres === 0);
+            const flowDisplay = (row.flow_litres === null) ? '<span class="text-muted">❌ Missing</span>' : row.flow_litres;
+            const valveClass = row.valve_state === 'OPEN' ? 'badge-open' : 'badge-closed';
+            
+            html += `<tr class="${isFaulty ? 'faulty' : ''}">
+                <td><code>${row.reading_id || 'N/A'}</code></td>
+                <td><strong>${row.ward}</strong></td>
+                <td>${flowDisplay}</td>
+                <td><span class="badge ${valveClass}">${row.valve_state}</span></td>
+                <td>${row.device_id}</td>
+                <td>${new Date(row.recorded_at).toLocaleString()}</td>
+            </tr>`;
+        });
+
+        html += `</tbody></table>`;
+        container.innerHTML = html;
+    }
+
+    // Initial load
+    fetchTableData();
+    setInterval(fetchTableData, 10000); // Refresh table every 10 seconds
+</script>
+</body>
+</html>

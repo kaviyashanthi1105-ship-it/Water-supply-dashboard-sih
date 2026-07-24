@@ -1,0 +1,17 @@
+from flask import Flask, jsonify
+from flask_cors import CORS
+import random
+
+app = Flask(__name__)
+CORS(app)
+
+@app.route('/api/data')
+def get_data():
+    return jsonify({
+        'flow': round(random.uniform(10, 50), 2),
+        'pressure': round(random.uniform(2, 8), 2),
+        'level': round(random.uniform(30, 90), 2)
+    })
+
+if __name__ == '__main__':
+    app.run(debug=True, port=5000)
