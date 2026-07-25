@@ -1,70 +1,89 @@
-\# 🚰 Ward Water Supply Measurement \& Equity Dashboard
+📖 Overview
 
+The Aqua Ward Water Supply Measurement & Equity Dashboard is a smart water monitoring system developed for SIH 2026. It measures ward-wise water distribution using a sensor simulator and provides real-time insights through an interactive dashboard. The system helps municipal authorities identify supply inequalities and improve water distribution schedules.
 
+📖 Problem Statement
 
-\[!\[SIH 2026](https://img.shields.io/badge/SIH-2026-blue)](https://www.sih.gov.in/)
+A town supplies water to its wards on a rotating schedule. Residents in some wards complain they receive far less water than others, but the corporation cannot verify these complaints because supply is never measured—only valve operation times are noted manually.
 
-\[!\[Python](https://img.shields.io/badge/Python-3.9+-green)](https://www.python.org/)
+Without accurate measurements, complaints cannot be validated and schedules cannot be adjusted effectively.
 
-\[!\[Flask](https://img.shields.io/badge/Flask-2.0+-lightgrey)](https://flask.palletsprojects.com/)
+Objective: Build a device simulator and dashboard that measures the water actually delivered at each ward supply point and displays ward-wise supply over time so that complaints can be verified using real data.
 
-\[!\[SQLite](https://img.shields.io/badge/Database-SQLite-blue)](https://www.sqlite.org/)
+✨ Features Implemented
+SIH Task	Feature	Status
+Task 1	SIH-compliant sample data generation with faulty cases (Outliers, Missing Values and Stuck Readings)	✅
+Task 2	Server-side validation and SQLite data persistence	✅
+Task 3	Listing, Search and Filter functionality with visual fault highlighting	✅
+Task 4	Non-blocking Sensor Node using threading.Timer with Moving Average smoothing	✅
+Task 5	Graceful network recovery, auto-reconnection and local logging	✅
+Task 6	Comprehensive documentation and demonstration-ready implementation	✅
 
-\[!\[Status](https://img.shields.io/badge/Status-Completed-brightgreen)]()
+🛠️ Technology Stack
+Component	Technology Used
+Frontend	HTML5, CSS3, JavaScript, Chart.js
+Backend	Python Flask (REST API)
+Database	SQLite
+Simulator	Python (threading, requests)
+Visualization	Real-time Charts using Chart.js
+DevOps	start.bat (One-click execution)
+⚙️ Key Functionalities
+Real-time Ward-wise Water Monitoring.
+Water Flow Measurement Simulation.
+Fault Detection (Outliers, Missing Values and Stuck Readings).
+Moving Average based Sensor Data Smoothing.
+Dynamic Search and Filtering.
+SQLite Data Storage.
+Network Failure Handling and Auto Recovery.
+Interactive Dashboard with Graphical Visualization.
+📂 Project Structure
 
+> 🔹 Backend Module – Flask-based REST APIs.
 
+> 🔹 Sensor Simulator – Generates ward-wise water flow readings.
 
-\## 📖 Problem Statement
+> 🔹 Dashboard Module – Displays real-time analytics.
 
+> 🔹 Database Module – Stores water supply measurements.
 
+> 🔹 Validation Module – Detects faulty sensor readings.
 
-A town supplies water to its wards on a rotating schedule. Residents in some wards complain they receive far less than others, but the corporation cannot verify this because supply is never measured—only valve operation times are noted manually. Without measurement, complaints cannot be verified, and schedules cannot be corrected.
+> 🔹 Documentation Module – Provides setup and project details.
+Modify the folder structure above if your project contains additional files or folders.
 
+🚀 How It Works
+The Sensor Simulator generates ward-wise water flow data.
+The Flask REST API receives and validates the readings.
+The validated data is stored in SQLite.
+The dashboard displays real-time ward-wise measurements.
+Faulty readings are automatically detected and highlighted.
+Authorities can analyse supply inequalities using visual reports.
+📊 Output Dashboard
 
+The dashboard provides:
 
-\*\*Objective:\*\* Build a device simulator and dashboard that measures the water actually delivered at each ward supply point and displays ward-wise supply over time, so complaints can be checked against measurement and the schedule adjusted.
+Ward-wise Water Supply Measurements.
+Real-time Graphical Visualization.
+Search and Filtering Options.
+Fault Detection Alerts.
+Water Distribution Analytics.
 
+Add screenshots of your dashboard inside a screenshots/ folder and include them here before submission.
 
+🔮 Future Enhancements
+IoT Sensor Integration.
+AI-based Water Demand Prediction.
+SMS and Email Notifications.
+Mobile Application Support.
+Cloud-based Deployment.
+Advanced Water Consumption Analytics.
+👨‍💻 Team Information
 
-\## ✨ Features Implemented
+Project: Aqua Ward Water Supply Measurement & Equity Dashboard
 
+SIH 2026 Project
+BE Computer Science and Engineering
 
+✅ Project Status
 
-| SIH Task | Feature | Status |
-
-| :---: | :--- | :---: |
-
-| \*\*Task 1\*\* | \*\*Sample Data:\*\* SIH-compliant schema (`reading\_id`, `ward`, `flow\_litres`, `valve\_state`, `recorded\_at`, `device\_id`) with deliberate faulty cases (Outliers, Missing values, Stuck readings). | ✅ |
-
-| \*\*Task 2\*\* | \*\*Register End-to-End:\*\* Server-side validation, derived figure calculation, and SQLite persistence. | ✅ |
-
-| \*\*Task 3\*\* | \*\*Listing, Search \& Filter:\*\* Dynamic table with Ward/Valve filters, instant search, record count, and visual highlighting for faulty data. | ✅ |
-
-| \*\*Task 4\*\* | \*\*Non-blocking Sensor Node:\*\* `threading.Timer` based scheduling, Plausibility checks (>100 L/s rejected), and Moving Average smoothing (last 5 values). | ✅ |
-
-| \*\*Task 5\*\* | \*\*Integration \& Resilience:\*\* Graceful degradation during network loss, auto-reconnection, and local logging. | ✅ |
-
-| \*\*Task 6\*\* | \*\*Documentation:\*\* Comprehensive README, field definitions, and demonstration ready. | ✅ |
-
-
-
-\## 🛠️ Technology Stack
-
-
-
-\- \*\*Frontend:\*\* HTML5, CSS3, Vanilla JavaScript, Chart.js (Real-time graphing)
-
-\- \*\*Backend:\*\* Python Flask (REST API)
-
-\- \*\*Database:\*\* SQLite (Lightweight, file-based)
-
-\- \*\*Simulator:\*\* Python (`threading` for non-blocking I/O, `requests` for API calls)
-
-\- \*\*DevOps:\*\* `start.bat` (One-click orchestration)
-
-
-
-\## 📂 Project Structure
-
-
-
+Completed and Demonstration Ready for SIH 2026 Submission.
